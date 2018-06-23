@@ -1,0 +1,78 @@
+<div class="ajax-login-box">
+    <form id="login_form" action="{:url('Login/login',['inajax'=>'1'])}" method="post" class="bg" >
+        <dl class="first">
+            <dd>
+                <i class="icon icon-user-o"></i>
+                <input type="text" class="text ipt"  name="user_name" id="user_name" value="" placeholder="{:lang('user_name')}" data-rule="{:lang('username_required')}: required;" data-msg-required="{:lang('username_required')}" />
+            </dd>
+        </dl>
+        <dl>
+            <dd>
+                <i class="icon icon-password"></i>
+                <input type="password" class="text ipt" name="user_password" id="user_password" value="" placeholder="{:lang('user_password')}" data-rule="{:lang('password_required')}: required;" data-msg-required="{:lang('password_required')}" />
+            </dd>
+        </dl>
+        {if $Think.config.captcha_status_login == '1'}
+        <dl>
+            <dd class="clearfix">
+                <i class="icon icon-security"></i>
+                <input type="text" name="captcha_normal" class="text ipt fl" style="width:88px;" id="captcha_normal" maxlength="4" placeholder="{:lang('captcha_code')}" data-rule="{:lang('captchacode_required')}: required;" data-msg-required="{:lang('captchacode_required')}" data-target="#verify" />
+                <img class="fl ml10" height="38" src="{:url('index/getVerify')}" title="{$Think.lang.change_code}" name="codeimage" border="0" id="codeimage" onclick="javascript:NZE.getVerify('#codeimage');">
+                <div id="verify" class="fl"></div>
+            </dd>
+        </dl>
+        {/if}
+        <ul>
+            <li><a href="{:url('Login/register')}" class="register">{$Think.lang.quick_login_register}</a><a href="{:url('Login/forget_password')}" class="forget">{$Think.lang.quick_login_forget}</a></li>
+        </ul>
+        <div class="enter">
+            <a class="btn login-btn" href="javascript:void(0);" onclick='login()'>{:lang('login')}</a>
+        </div>
+        {if $Think.config.qq_isuse =='1' || $Think.config.sina_isuse =='1' || $Think.config.weixin_isuse =='1'}
+            <div class="partner-login clearfix">
+                <h3>你可以用合作伙伴账号登陆</h3>
+                <p>
+                    {if $setting_config.qq_isuse == '1'}
+                    <a class="login_ico ico_qq" href="{:url('Api/oa_qq')}"></a>
+                    {/if}
+                    {if $setting_config.sina_isuse == '1'}
+                    <a class="login_ico ico_weibo" href="{:url('Api/oa_sina')}"></a>
+                    {/if}
+                    {if $setting_config.weixin_isuse == '1'}
+                    <a class="login_ico ico_weixin" onclick="ajax_form('weixin_form', '微信账号登录', '{:url('Connectwx/index')}', 360);" title="微信账号登录"></a>
+                    {/if}
+                </p>
+            </div>
+        {/if}
+        <input type="hidden" value="{$Request.param.ref_url}" class="ipt" name="ref_url">
+    </form>
+</div>
+<link rel="stylesheet" href="{$Think.PLUGINS_SITE_ROOT}/validator/jquery.validator.css" >
+<script type='text/javascript' src="{$Think.PLUGINS_SITE_ROOT}/validator/jquery.validator.js"></script>
+<script>
+    function login() {
+        var params = NZE.getParams('.ipt');
+        if(!$('#user_name').isValid())return;
+        if(!$('#user_password').isValid())return;
+        if(!$('#captcha_normal').isValid())return;
+        var ll = layer.msg('正在处理数据，请稍后...',{time:600000});
+        $.post(NZE.U('home/login/checkLogin'),params,function(data){
+            console.log(data);
+            if(data.code=='1'){
+                layer.msg(data.msg, {icon: 6});
+                if(data.data.ref_url){
+                    // location.href=NZE.U('home/shop/index');
+                    location.href=NZE.U(data.data.ref_url);
+                }else{
+                    location.reload();
+                }
+            }else{
+                layer.close(ll);
+                layer.msg(data.msg, {icon: 5});
+                NZE.getVerify('#codeimage');
+            }
+
+        });
+        return true;
+    }
+</script>

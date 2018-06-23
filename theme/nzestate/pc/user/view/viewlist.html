@@ -1,0 +1,114 @@
+{extend name="default/base/base_user" /}
+
+{block name="user_btn"}
+    <a class="user-btn user-btn-red" href="javascript:void(0);" nz_type="delbtn" data-param='{"goods_id":"all"}'><i class="fa fa-trash-o"></i>清空全部足迹</a>
+{/block}
+
+{block name="user_main"}
+
+<div class="user-view">
+    <div class="user-view-left">
+        {notempty name="viewlist"}
+        <ul class="user-view-list">
+            {foreach name="viewlist" item="v"}
+                <li id="browserow_{$v.goods_id}">
+                    <div class="view-timeline">&nbsp;</div>
+                    <div class="view-time">{$v.browsetime_text}</div>
+                    <div class="view-goods">
+                        <div class="goods-thumb">
+                            <a href="{:url('Goods/index',['goods_id'=>$v.goods_id])}" target="_blank">
+                                <img src="{:goods_cthumb($v.goods_image,60)}" />
+                            </a>
+                        </div>
+                        <dl class="goods-info">
+                            <dt><a target="_blank" href="{:url('Goods/index',['goods_id'=>$v.goods_id])}">{$v.goods_name}</a></dt>
+                            <dd>商城价：
+                                <em class="sale-price">{$Think.lang.currency}{$v.goods_promotion_price}</em>
+                                <em class="market-price" title="市场价">{$Think.lang.currency}{$v.goods_marketprice}</em>
+                            </dd>
+                        </dl>
+                        <a class="user-btn user-btn-orange" href="javascript:addcart({$v.goods_id},1,'','o');">
+                            <i class="fa fa-shopping-cart"></i>加入购物车
+                        </a>
+                        <br/><br/>
+                        <a class="user-btn" href="javascript:void(0);" nz_type="delbtn" data-param='{"goods_id":{$v.goods_id}}'>
+                            <i class="fa fa-trash-o"></i>删除该记录
+                        </a>
+                    </div>
+                </li>
+            {/foreach}
+        </ul>
+
+        {else /}
+            <div class="norecord">
+                <div class="warning-option"><i></i><span>{$Think.lang.no_record}</span></div>
+            </div>
+        {/notempty}
+    </div>
+    <div class="user-view-cat" style="display: none">
+        <div class="title">
+            <a href="{:url('userview/viewlist')}" class="{$Request.param.cat_id ?'':'selected'}">全部浏览历史</a>
+        </div>
+        <ul id="sidebarMenu">
+            {foreach name="viewcat_list" item="v"}
+                <li class="side-menu"> <a href="{:url('userview/viewlist',['cat_id'=>$key])}" class="{if $Request.param.cat_id == $key}selected{/if}"><i></i>{$v.cat_name}</a>
+                    <ul style="<?php echo input('param.cat_id') == $k || in_array(input('param.cat_id'),array_keys($v['child_cat']))?'display: block;':'display: none;'; ?>">
+                        {foreach name="v.child_cat" item="v_son" key="k_son"}
+                        <li class="{if $Request.param.cat_id == $k_son}selected{/if}"><a href="{:url('userview/viewlist',['cat_id'=>$k_son])}">{$v_son.cat_name}</a></li>
+                        {/foreach}
+                    </ul>
+                </li>
+            {/foreach}
+        </ul>
+    </div>
+</div>
+<form id="buynow_form" method="post" action="{:url('Buy/buy_step1')}" target="_blank">
+    <input id="goods_id" name="cart_id[]" type="hidden"/>
+</form>
+
+{/block}
+
+{block name="footer_js"}
+<script>
+    jQuery.browser={};(function(){jQuery.browser.msie=false; jQuery.browser.version=0;if(navigator.userAgent.match(/MSIE ([0-9]+)./)){ jQuery.browser.msie=true;jQuery.browser.version=RegExp.$1;}})();
+</script>
+<script src="{$Think.PLUGINS_SITE_ROOT}/jquery.poshytip.min.js"></script>
+<script src="{$Think.PLUGINS_SITE_ROOT}/js/jquery.raty/jquery.raty.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.raty').raty({
+            path: "{$Think.PLUGINS_SITE_ROOT}/js/jquery.raty/img",
+            readOnly: true,
+            score: function() {
+                return $(this).attr('data-score');
+            }
+        });
+
+        //清除单条浏览记录
+        $("[nz_type='delbtn']").on('click',function(){
+            if(confirm("确实要删除吗？")){
+                var data_str = $(this).attr('data-param');
+                eval( "data_str = "+data_str);
+                $.getJSON(HOMESITEURL+'/userview/del.html?goods_id='+data_str.goods_id,function(data){
+                    if(data.done == true){
+                        if(data_str.goods_id == 'all'){
+                            location.reload(true);
+                        } else {
+                            $("#browserow_"+data_str.goods_id).hide();
+                        }
+                    }else{
+                        showDialog(data.msg);
+                    }
+                });
+            }
+        });
+
+        //立即购买
+        $('a[nz_type="buy_now"]').click(function(){
+            eval('var data_str = ' + $(this).attr('data-param'));
+            $("#goods_id").val(data_str.goods_id+'|1');
+            $("#buynow_form").submit();
+        });
+    });
+</script>
+{/block}

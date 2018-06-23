@@ -1,0 +1,29 @@
+{extend name="default/base/base_user" /}
+
+
+{block name="user_main"}
+
+<div id="user_center_box" class="user-index-content">
+</div>
+{/block}
+
+{block name="footer_js"}
+<script type="text/javascript">
+    $(function() {
+        var INFO_TYPE = ['user_info', 'order_info', 'goods_info', 'point_info', 'blog_info'];
+        function _ajax_load(type) {
+            $.ajax({
+                url: NZE.U('user/user/ajax_load_' + type),
+                success: function(html) {
+                    INFO_TYPE.shift();
+                    if (INFO_TYPE[0]) {
+                        _ajax_load(INFO_TYPE[0]);
+                    }
+                    $('#user_center_box').append(html);
+                }
+            });
+        }
+        _ajax_load(INFO_TYPE[0])
+    });
+</script>
+{/block}

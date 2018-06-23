@@ -1,0 +1,59 @@
+{extend name="public/base" /}
+
+{block name="header_js"}
+
+{/block}
+{block name="main"}
+<!--首页轮播大图-->
+<div class="home-banner clearfix">
+    {notempty name="ad_banner"}
+    <div class="bd">
+        <ul>
+            {foreach $ad_banner as $vo}
+                <li class="item" style="background:{$vo.bgcolor};">
+                    <a class="item-pic" href="{$vo.ad_link}" {if condition="$vo.target eq 1"}target="_blank"{/if}>
+                    <img src="{$vo.ad_image}" title="{$vo.ad_title}" alt="{$vo.ad_title}"></a>
+                </li>
+            {/foreach}
+        </ul>
+    </div>
+    <div class="hd">
+        <ul>
+            {foreach $ad_banner as $vo}
+                <li class=""></li>
+            {/foreach}
+        </ul>
+    </div>
+    {/notempty}
+</div>
+<div class="w1200">
+<!--推荐品牌-->
+    <div class="home-recommend-brand clearfix">
+        {notempty name="ad_recommend_brand"}
+            {foreach ad_recommend_brand as $vo}
+                <a class="item-list" href="{$vo.ad_link}" {if condition="$vo.target eq 1"}target="_blank"{/if}>
+                <img src="{$vo.ad_image}" title="{$vo.ad_title}" alt="{$vo.ad_title}"></a>
+            {/foreach}
+        {/notempty}
+    </div>
+    <div class="ad-index-banner1 clearfix">
+        {notempty name="ad_banner1"}
+            {foreach ad_banner1 as $vo}
+                <a class="item-list" href="{$vo.ad_link}" {if condition="$vo.target eq 1"}target="_blank"{/if}>
+                <img src="{$vo.ad_image}" title="{$vo.ad_title}" alt="{$vo.ad_title}"></a>
+            {/foreach}
+        {/notempty}
+    </div>
+
+</div>
+
+{/block}
+{block name="footer_js"}
+{notempty name="ad_banner"}
+    <script src="__STATIC__/js/jquery.SuperSlide.js"></script>
+    <script type="text/javascript">
+        //Banner轮播
+        $(".home-banner").slide({mainCell: ".bd ul", autoPlay: true, delayTime: 500, interTime: 5000});
+    </script>
+{/notempty}
+{/block}

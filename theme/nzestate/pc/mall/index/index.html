@@ -1,0 +1,317 @@
+{extend name="default/base/base" /}
+
+{block name="header_js"}
+    <script src="{$Think.PLUGINS_SITE_ROOT}/jquery.SuperSlide.js"></script>
+{/block}
+{block name="main"}
+<!--首页轮播大图-->
+<div class="home-banner">
+    <div class="bd">
+        <ul>
+            {NZtaglib:adv position_id='1' limit='10' item='v'}
+            <li style="background: url({$Think.UPLOAD_SITE_URL}/{$Think.ATTACH_ADV}/{$v.adv_code}) center top no-repeat rgb(35, 35, 35); display: none;background-color: {$v.adv_bgcolor|default=''}" style="{$v.adv_style|default=''}">
+                <a href="{$v.adv_link}" target="{$v.adv_target}" title="{$v.adv_title}">&nbsp;</a>
+            </li>
+            {/NZtaglib:adv}
+        </ul>
+    </div>
+    <div class="hd">
+        <ul>
+            {NZtaglib:adv position_id='1' limit='10' item='v'}
+                <li class=""></li>
+            {/NZtaglib:adv}
+        </ul>
+    </div>
+
+
+    <div class="right-sidebar">
+        <div class="user-center">
+            {if $Think.session.is_login}
+            <div class="user-avatar-wrap">
+                <a id="right-login-btn" href="{:url('user/index')}" target="_blank"><img class="lazyload"  data-original="{:get_user_avatar($Think.session.avatar)}"></a>
+            </div>
+            <div class="info-wrap">
+                <div class="user-info-box">
+                    <div class="user_info clearfix">
+                        <em>Hi，{:session('user_name')}</em>
+                    </div>
+
+                    <div class="clearfix treasure">
+                        <a href="{:url('userorder/index',['state_type'=>'state_new'])}" target="_blank" class="gold_coin">
+                            <em>{$user_order_info.order_nopay_count}</em>
+                            <p>待付款</p>
+                        </a>
+                        <a href="{:url('userorder/index',['state_type'=>'state_send'])}" target="_blank" class="gold_coin">
+                            <em>{$user_order_info.order_noreceipt_count}</em>
+                            <p>待收货</p>
+                        </a>
+                        <a href="{:url('userorder/index',['state_type'=>'state_noeval'])}" target="_blank">
+                            <em>{$user_order_info.order_noeval_count}</em>
+                            <p>待评价</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {else /}
+            <div class="user-avatar-wrap">
+                <a id="index_account_icon_unlogin" href="javascript:void(0)"><img class="lazyload"  data-original="{:get_user_avatar($Think.session.avatar)}"></a>
+            </div>
+            <div class="info-wrap">
+                <div class="login-box">
+                    <div class="title">Hi~你好!</div>
+                    <div class="tips">
+                    </div>
+                    <div class="btn_wrap">
+                        <a href="{:url('Login/login')}" class="login_btn">登录</a>
+                        <a href="{:url('Login/register')}" class="regist_btn">注册</a>
+                    </div>
+                </div>
+            </div>
+            {/if}
+            <div class="top_line">
+                <div class="vip_list">
+                    <a href="javascript:void(0)">
+                        <i class="fa fa-heart-o" style="background:#ff9b1b"></i>
+                        <p class="vip_item_text">买家保障</p>
+                    </a>
+                    <a href="javascript:void(0)">
+                        <i class="fa fa-thumbs-o-up" style="background:#52a6ff"></i>
+                        <p class="vip_item_text">商家认证</p>
+                    </a>
+                    <a href="javascript:void(0)">
+                        <i class="fa fa-handshake-o" style="background:#57c15b"></i>
+                        <p class="vip_item_text">安全交易</p>
+                    </a>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="notice_list">
+                {foreach $index_articles as $i_a}
+                <a title="{$i_a.article_title}" href="{if $i_a.article_url !=''}{$i_a.article_url}{else /}{:url('Article/show',['article_id'=>$i_a.article_id])}{/if}" target="_blank">
+                    <span>{$i_a.article_title}</span>
+                </a>
+                {/foreach}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--首页广告轮播-->
+<div class="home-scroll w1200 mt20">
+    <div class="bd">
+        <ul>
+            <li>
+                {NZtaglib:adv position_id='2' limit='10' item='v'}
+                    <a href="{$v.adv_link}" target="{$v.adv_target}" title="">
+                        <img class="lazyload" data-original="{$Think.UPLOAD_SITE_URL}/{$Think.ATTACH_ADV}/{$v.adv_code}" style="{$v.adv_style|default=''}">
+                    </a>
+                {/NZtaglib:adv}
+            </li>
+        </ul>
+        <a class="ctrl prev" href="javascript:void(0)"><</a>
+        <a class="ctrl next" href="javascript:void(0)">></a>
+    </div>
+</div>
+
+<!--推荐，打折，热卖，抢购-->
+<div class="home-sale-activity w1200 mt20">
+    <div class="hd">
+        <ul class="tabs-nav">
+            {notempty name="recommend_list"}
+                <li class="tabs-selected on"><i class="arrow"></i><h3>商品推荐</h3></li>
+            {/notempty}
+            {notempty name="promotion_list"}
+                <li class=""><i class="arrow"></i><h3>打折促销</h3></li>
+            {/notempty}
+            {notempty name="new_list"}
+                <li class=""><i class="arrow"></i><h3>最新热卖</h3></li>
+            {/notempty}
+            {notempty name="groupbuy_list"}
+                <li class=""><i class="arrow"></i><h3>疯狂抢购</h3></li>
+            {/notempty}
+        </ul>
+    </div>
+    <div class="bd tabs-panel">
+        <!--商品推荐-->
+        <ul style="display: block;">
+            {notempty name="recommend_list"}
+                {foreach name="recommend_list" item="goods"}
+                    <li>
+                        <dl>
+                            <dt class="goods-name"><a target="_blank" href="{:url('Goods/index',['goods_id'=>$goods.goods_id])}" title="{$goods.goods_name}">{$goods.goods_name}</a></dt>
+                            <dd class="goods-thumb">
+                                <a target="_blank" href="{:url('Goods/index',['goods_id'=>$goods.goods_id])}">
+                                    <img class="lazyload" data-original="{:goods_cthumb($goods.goods_image)}" alt="{$goods.goods_name}">
+                                </a>
+                            </dd>
+                            <dd class="goods-price">商城价：<em>${$goods.goods_price}</em></dd>
+                        </dl>
+                    </li>
+                {/foreach}
+            {/notempty}
+        </ul>
+        <!--打折促销-->
+        {notempty name="promotion_list"}
+            <ul style="display: none;">
+                {foreach name="promotion_list" item="goods"}
+                    <li>
+                        <dl>
+                            <dt class="goods-name"><a target="_blank" href="{:url('Goods/index',['goods_id'=>$goods.goods_id])}" title="{$goods.goods_name}">{$goods.goods_name}</a></dt>
+                            <dd class="goods-thumb">
+                                <a target="_blank" href="{:url('Goods/index',['goods_id'=>$goods.goods_id])}">
+                                    <img class="lazyload" data-original="{:goods_cthumb($goods.goods_image)}" alt="{$goods.goods_name}">
+                                </a>
+                            </dd>
+                            <dd class="goods-price">商城价：<em>${$goods.xianshigoods_price}</em></dd>
+                        </dl>
+                    </li>
+                {/foreach}
+            </ul>
+        {/notempty}
+        <!--最新热卖-->
+        {notempty name="new_list"}
+            <ul style="display: none;">
+                {foreach name="new_list" item="goods"}
+                <li>
+                    <dl>
+                        <dt class="goods-name"><a target="_blank" href="{:url('Goods/index',['goods_id'=>$goods.goods_id])}" title="{$goods.goods_name}">{$goods.goods_name}</a></dt>
+                        <dd class="goods-thumb">
+                            <a target="_blank" href="{:url('Goods/index',['goods_id'=>$goods.goods_id])}">
+                                <img class="lazyload" data-original="{:goods_cthumb($goods.goods_image)}" alt="{$goods.goods_name}">
+                            </a>
+                        </dd>
+                        <dd class="goods-price">商城价：<em>${$goods.goods_price}</em></dd>
+                    </dl>
+                </li>
+                {/foreach}
+            </ul>
+        {/notempty}
+        <!--疯狂抢购-->
+        {notempty name="groupbuy_list"}
+            <ul style="display: none;">
+                {foreach name="groupbuy_list" item="goods"}
+                    <li>
+                        <dl>
+                            <dt class="goods-name"><a target="_blank" href="{:url('Goods/index',['goods_id'=>$goods.goods_id])}" title="{$goods.goods_name}">{$goods.goods_name}</a></dt>
+                            <dd class="goods-thumb">
+                                <a target="_blank" href="{:url('Goods/index',['goods_id'=>$goods.goods_id])}">
+                                    <img class="lazyload" data-original="{:groupbuy_thumb($goods.groupbuy_image)}" alt="{$goods.goods_name}">
+                                </a>
+                            </dd>
+                            <dd class="goods-price">商城价：<em>${$goods.groupbuy_price}</em></dd>
+                        </dl>
+                    </li>
+                {/foreach}
+            </ul>
+        {/notempty}
+    </div>
+</div>
+
+<!--楼层-->
+{foreach name="floor_block" item="vo" key="k" }
+{php}$style=$k%5;{/php}
+{switch name="style"}
+{case value="0"}{php}$var1='purple';{/php}{/case}
+{case value="1"}{php}$var1='orage';{/php}{/case}
+{case value="2"}{php}$var1='blue';{/php}{/case}
+{case value="3"}{php}$var1='green';{/php}{/case}
+{case value="4"}{php}$var1='pink';{/php}{/case}
+{case value="5"}{php}$var1='brown';{/php}{/case}
+{case value="6"}{php}$var1='red';{/php}{/case}
+{case value="7"}{php}$var1='default';{/php}{/case}
+{/switch}
+{php}$floor = $k + 1; {/php}
+<div class="floor floor{php}echo $k+1;{/php} w1200 style-{$var1}">
+    <div class="floor-left">
+        <div class="title">
+            <span>{$floor}F</span><h2 title="{$vo.cat_name}">{$vo.cat_name}</h2>
+        </div>
+        <div class="recommend-cats">
+            <ul>
+                {foreach name="vo.goods_cat_list" item="goods_cat"}
+                <li><a href="{:url('Search/index',['cate_id'=>$goods_cat.cat_id])}" title="{$goods_cat.cat_name}" >{$goods_cat.cat_name}</a></li>
+                {/foreach}
+            </ul>
+        </div>
+        <div class="left-ads">
+            {switch name="k"}
+            {case value="0"}{php}$var2=8;{/php}{/case}
+            {case value="1"}{php}$var2=9;{/php}{/case}
+            {case value="2"}{php}$var2=10;{/php}{/case}
+            {case value="3"}{php}$var2=11;{/php}{/case}
+            {case value="4"}{php}$var2=12;{/php}{/case}
+            {/switch}
+            {if $k<5}
+                {NZtaglib:adv position_id='$var2' limit='1' item='v'}
+                    <a href="{$v.adv_link}" target="{$v.adv_target}" title="">
+                        <img class="lazyload" data-original="{$Think.UPLOAD_SITE_URL}/{$Think.ATTACH_ADV}/{$v.adv_code}" style="{$v.adv_style|default=''}">
+                    </a>
+                {/NZtaglib:adv}
+            {/if}
+        </div>
+    </div>
+    <div class="floor-right">
+        <ul class="tabs-nav hd">
+            {foreach name="vo.goods_list" item="list"  key="list_key"}
+                {notempty name="list.cat_list"}
+                    <li {if condition="$list_key eq '0'"}class="on"{/if}><i class="arrow"></i><h3>{$list.cat_name}</h3></li>
+                {/notempty}
+            {/foreach}
+        </ul>
+        <div class="goods-list bd">
+            {foreach name="vo.goods_list" item="list" key="list_key"}
+            {notempty name="list.cat_list"}
+                <ul {if condition="$list_key eq '0'"}style="display:block"{/if}>
+                {foreach name="list.cat_list" item="goods"}
+                    <li>
+                        <dl>
+                            <dt class="goods-name"><a target="_blank" href="{:url('Goods/index',['goods_id'=>$goods.goods_id])}" title="{$goods.goods_name}">{$goods.goods_name}</a></dt>
+                            <dd class="goods-thumb">
+                                <a target="_blank" href="{:url('Goods/index',['goods_id'=>$goods.goods_id])}">
+                                    <img class="lazyload" data-original="{:goods_cthumb($goods.goods_image)}" alt="{$goods.goods_name}"/>
+                                </a>
+                            </dd>
+                            <dd class="goods-price">
+                                <em>${$goods.goods_price}</em>
+                                <span class="original">¥{$goods.goods_marketprice}</span>
+                            </dd>
+                        </dl>
+                    </li>
+                {/foreach}
+                </ul>
+            {/notempty}
+            {/foreach}
+        </div>
+    </div>
+</div>
+
+<div class="w1200 floor-banner">
+    {switch name="k"}
+    {case value="0"}{php}$var3=3;{/php}{/case}
+    {case value="1"}{php}$var3=5;{/php}{/case}
+    {case value="2"}{php}$var3=6;{/php}{/case}
+    {case value="3"}{php}$var3=7;{/php}{/case}
+    {case value="4"}{php}$var3=4;{/php}{/case}
+    {/switch}
+    {if $k<5}
+    {NZtaglib:adv position_id='$var3' limit='1' item='v'}
+    <a href="{$v.adv_link}" target="{$v.adv_target}" title="">
+        <img class="lazyload" data-original="{$Think.UPLOAD_SITE_URL}/{$Think.ATTACH_ADV}/{$v.adv_code}" style="{$v.adv_style|default=''}">
+    </a>
+    {/NZtaglib:adv}
+    {/if}
+</div>
+<script>
+    jQuery(".floor{$floor} .floor-right").slide({mainCell: ".bd", autoPlay: false, interTime: 5000});
+</script>
+{/foreach}
+
+{/block}
+{block name="footer_js"}
+<script>
+    //轮播
+    jQuery(".home-banner").slide({mainCell: ".bd ul", autoPlay: true, delayTime: 500, interTime: 4000});
+    jQuery(".home-scroll").slide({mainCell: ".bd li", autoPlay: true, delayTime: 1000, effect: "left", interTime: 4000, vis: 5});
+    jQuery(".home-sale-activity").slide({autoPlay: false, });
+</script>
+{/block}

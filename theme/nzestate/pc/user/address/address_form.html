@@ -1,0 +1,94 @@
+{extend name="default/base/base_user" /}
+{block name="user_main"}
+
+<div class="user-form fl">
+    <form method="post">
+        <!--{if $Think.config.delivery_isuse}-->
+        <!--<dl>
+            <dt>&nbsp;</dt>
+            <dd> <a href="{:url('address/delivery_add')}" class="dsm-btn-mini dsm-btn-orange"><i class="icon-flag"></i>使用自提服务站</a>
+                <p class="hint">当您需要对自己的收货地址保密或担心收货时间冲突时可使用该业务，<br/>添加后可在购物车中作为收货地址进行选择，货品将直接发送至自提服务站，<br/>到货后短信、站内消息进行通知，届时您可使用“自提码”至该服务站兑码取货。</p> </dd>
+        </dl>-->
+        <!--{/if}-->
+        <dl>
+            <dt>&nbsp;</dt>
+            <dd>
+                <p class="hint">添加新地址。</p>
+            </dd>
+        </dl>
+        <dl>
+            <dt>收货人：</dt>
+            <dd>
+                <span class="w400">
+                    <input type="text" class="text" maxlength="20" name="true_name" value="{$address.address_realname}">
+                </span>
+            </dd>
+        </dl>
+        <dl>
+            <dt>所在地区：</dt>
+            <dd>
+                <span class="w400">
+                    <div>
+                        <input type="hidden" value="{$address.province_id|default=''}" name="province_id" id="_area_1">
+                        <input type="hidden" value="{$address.city_id|default=''}" name="city_id" id="_area_2">
+                        <input type="hidden" value="{$address.area_id|default=''}" name="area_id" id="_area_3">
+                        <input type="hidden" name="area_info" id="region" value="{$address.area_info|default=''}"/>
+                    </div>
+                </span>
+            </dd>
+        </dl>
+        <dl>
+            <dt>详细地址：</dt>
+            <dd>
+                <span class="w400">
+                    <input type="text" class="text" name="address" value="{$address.address_detail}" style="width: 80%;">
+                </span>
+            </dd>
+        </dl>
+        <dl>
+            <dt>电话号码：</dt>
+            <dd>
+                <span class="w400">
+                    <input type="text" class="text" maxlength="20" name="tel_phone" value="{$address.tel_phone}">
+                </span>
+            </dd>
+        </dl>
+        <dl>
+            <dt>手机号码：</dt>
+            <dd>
+                <span class="w400">
+                    <input type="text" class="text" maxlength="20" name="mob_phone" value="{$address.mobile_phone}">
+                </span>
+            </dd>
+        </dl>
+        <!--{if !isset($address.station_id) || $address.station_id==0}-->
+        <dl>
+            <dt>是否为默认：</dt>
+            <dd>
+                <input type="checkbox" class="checkbox vm mr5" name="is_default" id="is_default" value="1" {if $address.is_default eq '1'}checked="checked"{/if} />
+                <label for="is_default">设置为默认收货地址</label>
+            </dd>
+        </dl>
+        <!--{/if}-->
+        <dl class="bottom">
+            <dt></dt>
+            <dd>
+                <label class="submit-border">
+                    <input type="hidden" value="1" name="is_ajax" id="is_ajax" />
+                    <input type="hidden" value="{$address.address_id|default=0}" name="address_id" />
+                    <input type="hidden" value="{$action_type|default='add'}" name="action_type" />
+                    <a href="javascript:save_info('home/useraddress/save')" class="submit">{$Think.lang.home_user_save_modify}</a>
+                </label>
+            </dd>
+        </dl>
+    </form>
+</div>
+{/block}
+{block name="footer_js"}
+<script type="text/javascript">
+
+    $(function () {
+        $("#region").nz_region();
+    });
+</script>
+{/block}

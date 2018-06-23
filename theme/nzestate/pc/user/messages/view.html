@@ -1,0 +1,71 @@
+{extend name="default/base/base_user" /}
+
+{block name="user_main"}
+<div class="user-form">
+    {notempty name="message_list"}
+        {foreach name="message_list" item="v"}
+            <dl>
+                <dt>
+                    {if $drop_type == 'msg_seller'}
+                    {$v.from_user_name}{$Think.lang.home_message_speak}
+                    {elseif $drop_type== 'msg_system'}
+                    {$v.from_user_name}
+                    {else /}
+                    {$v.from_user_name}{$Think.lang.home_message_speak}
+                    {/if}
+                    {$Think.lang.colon}
+                </dt>
+                <dd>
+                    <p>{:nl2br(parsesmiles($v['message_body']))}</p>
+                    <p class="hint">({:date('Y-m-d H:i',$v.send_time)})</p>
+                </dd>
+            </dl>
+        {/foreach}
+    {/notempty}
+    {if $drop_type == 'msg_list'&& $isallowsend}
+        <form id="replyform" method="post" action="{:url('usermessage/savereply')}">
+            <input type="hidden" name="message_id" value="{$message_id}" />
+            <dl class="bottom">
+                <dt>{$Think.lang.home_message_reply}{$Think.lang.colon}</dt>
+                <dd>
+                    <p>
+                        <textarea name="msg_content" rows="3" class="textarea w500"></textarea>
+                    </p>
+                    <p> </p>
+                </dd>
+            </dl>
+            <dl class="bottom">
+                <dt>&nbsp;</dt>
+                <dd>
+                    <label class="submit-border">
+                        <input type="submit" class="submit" value="{$Think.lang.home_message_submit}" />
+                    </label>
+                </dd>
+            </dl>
+        </form>
+    {/if}
+</div>
+
+{/block}
+
+{block name="footer_js"}
+<script type="text/javascript">
+    $(function(){
+        $('#replyform').validate({
+            errorPlacement: function(error, element){
+                $(element).parent().next('p').html(error);
+            },
+            rules : {
+                msg_content : {
+                    required   : true
+                }
+            },
+            messages : {
+                msg_content : {
+                    required   : '{$Think.lang.home_message_reply_content_null}'
+                }
+            }
+        });
+    });
+</script>
+{/block}

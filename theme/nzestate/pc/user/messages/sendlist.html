@@ -1,0 +1,71 @@
+{extend name="default/base/base_user" /}
+
+{block name="user_btn"}
+    {if $isallowsend}
+        <a href="javascript:void(0);" onclick="checkstate();" class="user-btn user-btn-green" title="{$Think.lang.home_message_send_message}"><i class="fa fa-envelope-o"></i>{$Think.lang.home_message_send_message}</a>
+    {/if}
+{/block}
+{block name="user_main"}
+
+<table class="user-table">
+    <thead>
+    <tr>
+        <th class="w30"></th>
+        <th class="w100 tl">{$Think.lang.home_message_recipient}</th>
+        <th class="tl">{$Think.lang.home_message_content}</th>
+        <th class="w300">{$Think.lang.home_message_last_update}</th>
+        <th class="w110">{$Think.lang.home_message_command}</th>
+    </tr>
+    {notempty name="message_array"}
+    <tr>
+        <td colspan="20"><input type="checkbox" id="all" class="checkall"/>
+            <label for="all">{$Think.lang.home_message_select_all}</label>
+            <a href="javascript:void(0)" class="user-btn-mini" onclick="drop_msg('', '{$drop_type}');" name="message_id" nz_type="batchbutton"><i class="fa fa-trash-o"></i>{$Think.lang.home_message_delete}</a></td>
+    </tr>
+    {/notempty}
+    </thead>
+    <tbody>
+    {notempty name="message_array"}
+        {foreach name="message_array" item="v"}
+            <tr class="bd-line">
+                <td><input type="checkbox" class="checkitem" value="{$v.message_id}"/></td>
+                <td class="tl">{$v.to_user_name}</td>
+                <td class="tl">{$v.message_body}</td>
+                <td>{:date('Y-m-d H:i:s',$v.send_time)}</td>
+                <td class="table-handle">
+                    <span>
+                        <a href="javascript:void(0)" onclick="drop_msg('{$v.message_id}', '{$drop_type}');" class="btn-red"><i class="fa fa-trash-o"></i>
+                        <p>{$Think.lang.home_message_delete}</p>
+                        </a>
+                    </span>
+                </td>
+            </tr>
+        {/foreach}
+    {else /}
+        <tr>
+            <td colspan="20" class="norecord"><div class="warning-option"><i>&nbsp;</i><span>{$Think.lang.no_record}</span></div></td>
+        </tr>
+    {/notempty}
+    </tbody>
+    <tfoot>
+        {notempty name="message_array"}
+            <tr>
+                <td colspan="20"><div class="pagination">{$show_page}</div></td>
+            </tr>
+        {/notempty}
+    </tfoot>
+
+</table>
+
+{/block}
+
+{block name="footer_js"}
+<script type="text/javascript">
+    function drop_msg(id, type){
+        var msg = "{$Think.lang.home_message_delete_confirm}?";
+        var url = NZE.U('home/usermessage/drop', 'drop_type='+ type);
+        drop_info(url, id, msg);
+    }
+
+</script>
+{/block}

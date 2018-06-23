@@ -1,0 +1,50 @@
+<div class="top-nav">
+    <div class="w1200 clearfix">
+        <div class="fl">
+            <div class="fl welcome">
+                <span>您好，欢迎光临 {$shop_config.shop_info_store_title|default='诺庄NZestate'}</span>
+            </div>
+            {if $Think.session.USER.user_id}
+                <div class="fl islogin">
+                    <a class="red userinfo" href="{:url('user/user/index')}">{$Think.session.USER.user_nickname}</a>
+                    <a  href="{:url('user/login/logout')}"  title="退出" target="_self">安全退出</a>
+                </div>
+            {else /}
+                <div class="fl nologin">
+                    <a class="red" href="{:url('user/login/login')}">登录</a>
+                    <a href="{:url('user/login/register')}">注册</a>
+                </div>
+            {/if}
+        </div>
+        <ul class="nav-right fr clearfix">
+            <li><a target="_blank" href="{:url('user/Order/order_list')}">我的订单</a></li>
+            <li class="spacer"></li>
+            <li><a target="_blank" href="{:url('user/User/visit_log')}">我的浏览</a></li>
+            <li class="spacer"></li>
+            <li><a target="_blank" href="{:url('user/User/goods_collect')}">我的收藏</a></li>
+            <li class="spacer"></li>
+            <li>客户服务</li>
+            <li class="spacer"></li>
+            <li class="quick-nav">
+                <div class="nav-dh">
+                    <span>网站导航</span>
+                    <i class="iconfont icon-arrow-down"></i>
+                </div>
+                <ul class="nav-site clearfix">
+                    <li>
+                        <a href="{:url('shop/Activity/promoteList')}">优惠活动</a>
+                    </li>
+                    <li>
+                        <a href="{:url('shop/Activity/pre_sell_list')}">预售活动</a>
+                    </li>
+                    <!--<li>
+                        <a href="{:url('Home/Goods/integralMall')}">拍卖活动</a>
+                    </li>-->
+                    <li>
+                        <a href="{:url('shop/Goods/integralMall')}">兑换中心</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>

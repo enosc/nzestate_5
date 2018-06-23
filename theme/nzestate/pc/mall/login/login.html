@@ -1,0 +1,164 @@
+{extend name="default/base/base" /}
+{block name="css"}
+    <link rel="stylesheet" href="{$Think.HOME_SITE_ROOT}/css/login.css">
+    <link rel="stylesheet" href="{$Think.PLUGINS_SITE_ROOT}/validator/jquery.validator.css" >
+{/block}
+{block name="header"}
+{/block}
+
+{block name="main"}
+<div class="login-wrap clearfix" style="background-image: url('{$Think.HOME_SITE_ROOT}/images/login/login-bg.jpg');background-position: center center;">
+    <div class="login-header w1200">
+        <div class="logo">
+            <a href="{$Think.HOME_SITE_URL}"><img src="{$Think.config.url_attach_common}/{$Think.config.site_logo}" height="60"/></a>
+        </div>
+    </div>
+    <div class="login-container">
+        <div class="w1200">
+            <div class="login_form">
+                <div class="mt">
+                    <!--账户登录-->
+                    <a href="javascript:void(0)" class="on"><span>{:lang('username_login')}</span><i></i></a>
+                    {if $Think.config.sms_login == 1}
+                        <!--手机登录-->
+                        <a href="javascript:void(0)" ><span>{:lang('mobilephone_login')}</span><i></i></a>
+                    {/if}
+                </div>
+                <div class="mc">
+                    <form id="login_normal_form" method="post" action="{:url('Login/login')}">
+                        <div class="item">
+                            <div class="text-area">
+                                <div class="fa fa-user-o ico"></div>
+                                <input type="text" id="user_name" name="user_name" class="text ipt" placeholder="{:lang('user_name')}" tabindex="1" data-rule="{:lang('username_required')}: required;" data-msg-required="{:lang('username_required')}" />
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="text-area">
+                                <div class="fa fa-unlock-alt ico"></div>
+                                <input type="password" id="user_password" name="user_password" class="text ipt" placeholder="{:lang('user_password')}" tabindex="2" data-rule="{:lang('password_required')}: required;" data-msg-required="{:lang('password_required')}"/>
+                            </div>
+                        </div>
+                        {if $Think.config.captcha_status_login == '1'}
+                        <div class="item">
+                            <div class="text-area">
+                                <div class="icon icon-security ico"></div>
+                                <input type="text" id="captcha_normal" name="captcha_normal" class="text ipt" style="width: 125px;float:left" placeholder="{:lang('captcha_code')}" tabindex="2" maxlength="4" tabindex="2" data-rule="{:lang('captchacode_required')}: required;" data-msg-required="{:lang('captchacode_required')}" data-target="#verify"/>
+                                <span class="span" style="margin-left: 5px;">
+                                    <img style="position: absolute;top: 0;height:46px;" src="{:url('index/getVerify')}" title="{$Think.lang.change_code}" name="codeimage" id="codeimage">
+                                    <a class="makecode" href="javascript:void(0);" onclick="javascript:NZE.getVerify('#codeimage');">{$Think.lang.change_code}</a>
+                                </span>
+                                <div class="clearfix"></div>
+                                <div id="verify"></div>
+                            </div>
+                        </div>
+                        {/if}
+                        <div class="item forget-password">
+                            <a href="{:url('Login/forget_password')}">{:lang('forgot_password')}?</a>
+                            <!--新用户注册-->
+                            <a href="{:url('Login/register')}" title="{:lang('new_register')}">{:lang('new_register')}</a>
+                        </div>
+                        <div class="item">
+                            <!--忘记密码-->
+                            <input type="hidden" value="{$Request.param.ref_url}" name="ref_url" class="ipt">
+                            <a class="btn login-btn" href="javascript:void(0);" onclick='login()'>{:lang('login')}</a>
+                            <!--<input type="submit" class="btn login-btn" value="登录"/>-->
+                        </div>
+                    </form>
+                    {if $Think.config.sms_login == 1}
+                    <form id="login_mobile_form" method="post" action="{:url('Connectsms/login')}" style="display:none">
+                        <div class="item">
+                            <div class="text-area">
+                                <div class="fa fa-user-o ico"></div>
+                                <input type="text" id="sms_mobile" name="sms_mobile" class="text" placeholder="{:lang('phone_number')}" tabindex="1" data-rule="{:lang('phone_required')}: required;" data-msg-required="{:lang('phone_required')}"/>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="text-area">
+                                <div class="fa fa-unlock-alt ico"></div>
+                                <input type="password" id="sms_captcha" name="sms_captcha" class="text ipt" placeholder="手机验证码" tabindex="2" style="width:120px;" maxlength="6"/>
+                                <input class="send_code valid" type="button" value="获取验证码" onclick="get_sms_captcha(2);" aria-invalid="false">
+                            </div>
+                        </div>
+                        {if $Think.config.captcha_status_login == '1'}
+                        <div class="item">
+                            <div class="text-area">
+                                <div class="fa fa-unlock-alt ico"></div>
+                                <input type="text" id="captcha_mobile" name="captcha_mobile" class="text ipt" style="width: 125px;float:left" placeholder="验证码" tabindex="2" maxlength="4" />
+                                <span class="span">
+                                <img style="position: absolute;top: 0;height:46px;" src="{:url('index/getVerify')}" title="{$Think.lang.login_index_change_checkcode}" name="codeimage" id="sms_codeimage" />
+                                <a class="makecode" href="javascript:void(0);" onclick="javascript:NZE.getVerify('#codeimage');">{$Think.lang.change_code}</a>
+                            </span>
+                            </div>
+                        </div>
+                        {/if}
+                        <div class="item forget-password">
+                            <a href="{:url('login/forget_password')}">忘记密码?</a>
+                            <a href="{:url('login/register')}" title="注册">新用户注册</a>
+                        </div>
+                        <div class="item">
+                            <input type="hidden" value="{$Request.param.ref_url}" name="ref_url">
+                            <!--<input type="submit" class="btn login-btn" value="登录"/>-->
+                            <a class="btn login-btn" href="javascript:void(0);" onclick='login()'>{:lang('login')}</a>
+                        </div>
+                    </form>
+                    {/if}
+                </div>
+                {if $Think.config.qq_isuse =='1' || $Think.config.sina_isuse =='1' || $Think.config.weixin_isuse =='1'}
+                <div class="partner-login clearfix">
+                    <h3>你可以用合作伙伴账号登陆</h3>
+                    <p>
+                        {if $setting_config.qq_isuse == '1'}
+                            <a class="login_ico ico_qq" href="{:url('Api/oa_qq')}"></a>
+                        {/if}
+                        {if $setting_config.sina_isuse == '1'}
+                            <a class="login_ico ico_weibo" href="{:url('Api/oa_sina')}"></a>
+                        {/if}
+                        {if $setting_config.weixin_isuse == '1'}
+                            <a class="login_ico ico_weixin" onclick="ajax_form('weixin_form', '微信账号登录', '{:url('Connectwx/index')}', 360);" title="微信账号登录"></a>
+                        {/if}
+                    </p>
+                </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="footer_js"}
+<script type='text/javascript' src="{$Think.PLUGINS_SITE_ROOT}/validator/jquery.validator.js"></script>
+<script>
+    $(function () {
+        $(".login_form .mt a").click(function(){
+            var index=$(this).index();
+            $(this).parent().next().find("form").hide().eq(index).show();
+            $(this).addClass("on").siblings().removeClass("on");
+        });
+
+    });
+    function login() {
+        var params = NZE.getParams('.ipt');
+        if(!$('#user_name').isValid())return;
+        if(!$('#user_password').isValid())return;
+        if(!$('#captcha_normal').isValid())return;
+        var ll = layer.msg('正在处理数据，请稍后...',{time:600000});
+        $.post(NZE.U('home/login/checkLogin'),params,function(data){
+            console.log(data);
+            if(data.code==1){
+                layer.msg(data.msg, {icon: 6});
+                if(data.data.ref_url){
+                    // location.href=NZE.U('home/shop/index');
+                    location.href=NZE.U(data.data.ref_url);
+                }else{
+                    location.reload();
+                }
+            }else{
+                layer.close(ll);
+                layer.msg(data.msg, {icon: 5});
+            }
+
+        });
+        return true;
+    }
+</script>
+{/block}

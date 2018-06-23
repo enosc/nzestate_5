@@ -1,0 +1,41 @@
+{extend name="default/base/base_user" /}
+{block name="user_main"}
+{notempty name="follow_list"}
+    <ul class="user-friend-list">
+        {foreach name="follow_list" item="v"}
+            <li id="recordone_{$v.to_user_id}">
+                <div class="avatar">
+                    <a href="{:url('blog/index',['uid'=>$v.to_user_id])}" target="_blank" data-param="{'id':{$v.to_user_id}}" nz_type="mcard">
+                        <img src="{$Think.UPLOAD_SITE_URL}/{if $v.user_avatar}{$Think.ATTACH_AVATAR}/{$v.user_avatar}{else/}{$Think.ATTACH_COMMON}/{$Think.config.default_user_portrait}{/if}" alt="{$v.to_user_name}"/>
+                    </a>
+                </div>
+                <dl class="info">
+                    <dt> <a href="{:url('blog/index',['uid'=>$v.to_user_id])}" target="_blank" title="{$v.to_user_name}" data-param="{'id':{$v.to_user_id}}" nz_type="mcard">{$v.to_user_name}</a><i class="fa {$v.sex_cat}"></i></dt>
+                    <dd>{$v.area_info}</dd>
+                    <dd>
+                        <a href="{:url('usermessage/sendmsg',['user_id'=>$v.to_user_id])}" target="_blank" title="{$Think.lang.message}"><i class="fa fa-envelope"></i>{$Think.lang.message}</a>
+                    </dd>
+                </dl>
+                <div class="follow">
+                    {if $v.follow_state == 2}
+                        <p><i class="fa"></i>{$Think.lang.friend_follow_eachother}</p>
+                    {/if}
+                    <a href="javascript:void(0)" nz_type="cancelbtn" class="user-btn-mini" data-param='{"uid":"{$v.to_user_id}"}'>{$Think.lang.friend_cancel_follow}
+                    </a>
+                </div>
+            </li>
+        {/foreach}
+    </ul>
+{else /}
+    <div class="warning-option"><i class="fa">&nbsp;</i><span>{$Think.lang.no_record}</span></div>
+{/notempty}
+
+<div class="tc">
+    <div class="pagination"> {$show_page}</div>
+</div>
+
+{/block}
+
+{block name="footer_js"}
+<script src="{$Think.HOME_SITE_ROOT}/js/blog_friend.js"></script>
+{/block}

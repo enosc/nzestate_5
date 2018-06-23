@@ -1,0 +1,193 @@
+{extend name="public/base" /}
+
+{block name="title"}用户注册-{$shop_config.shop_info_store_title|default='诺庄NZestate'}{/block}
+
+{block name="css"}
+    <link rel="stylesheet" type="text/css" href="__THEME__/css/login.css">
+{/block}
+{block name="header"}{/block}
+{block name="main"}
+<div class="login-wrap register">
+    <div class="w1200">
+        <div class="site-logo">
+            <a class="fl" href="/" ><img src="{$shop_config['shop_info_store_logo']|default='__PUBLIC__/static/images/logo/pc_home_logo_default.png'}" style="width: 159px;height: 58px;"/></a>
+        </div>
+        <div class="login-form">
+            {if condition="$regist_sms_enable eq 1"}
+                <div class="item-tab">
+                    <ul class="tab-list">
+                        <li class="tab-item email {if condition="$Request.param.type eq ''"}active{/if}">
+                        <a href="{:url('user/login/register')}">邮箱注册</a>
+                        </li>
+
+                        <li class="tab-item mobile {if condition="$Request.param.type eq 'mobile'"}active{/if}">
+                            <a href="{:url('user/login/register', ['type'=>'mobile'])}">手机注册</a>
+                        </li>
+                    </ul>
+                </div>
+            {/if}
+            <!--邮箱注册-->
+
+            <div class="form-content email">
+                <div class="form-title">
+                    <span>用户注册</span>
+                </div>
+                <form id="registform" method="post">
+                    <input type="hidden" name="send_scene" value="1">
+                    <div class="content-item email">
+                        {if condition="$Request.param.type eq ''"}
+                            <div class="item">
+                                <label class="iconfont icon-email"></label>
+                                <input type="text" autofocus="autofocus" class="text" value="" placeholder="请输入邮箱" name="user_name" id="user_email" autocomplete="off">
+                            </div>
+                        {/if}
+                        {if condition="$Request.param.type eq 'mobile'"}
+                            <div class="item">
+                                <label class="iconfont icon-phone"></label>
+                                <input type="text" autofocus="autofocus" class="text" value="" placeholder="请输入手机号码" name="user_name" id="user_mobile" autocomplete="off">
+                            </div>
+                        {/if}
+                        <div class="item">
+                            <label class="iconfont icon-password-o"></label>
+                            <input type="password" class="text" value="" placeholder="请输入密码" name="user_password" id="user_password" autocomplete="off">
+                        </div>
+                        <div class="item">
+                            <label class="iconfont icon-password-o"></label>
+                            <input type="password" class="text" value="" placeholder="请再次输入密码" name="confirm_password" id="confirm_password" autocomplete="off">
+                        </div>
+                        {if condition="$regist_smtp_enable eq 1 && $Request.param.type eq ''"}
+                            <div class="item verify-code">
+                                <label class="iconfont icon-security"></label>
+                                <input type="text" class="text" value="" placeholder="请输入邮箱验证码" name="email_code" id="email_code" autocomplete="off">
+                            </div>
+                            <button class="send-code btn" onclick="send_smtp_reg_code()" type="button" id="send_email_code">发送</button>
+                        {/if}
+                        {if condition="$regist_sms_enable eq 1 && $Request.param.type eq 'mobile'"}
+                            <div class="item verify-code">
+                                <label class="iconfont icon-security"></label>
+                                <input type="text" class="text" value="" placeholder="请输入手机验证码" name="mobile_code" id="mobile_code" autocomplete="off">
+                            </div>
+                            <button class="send-code btn" onclick="send_sms_reg_code()" type="button" id="send_mobile_code">发送</button>
+                        {/if}
+
+                        <div class="item verify-code">
+                            <label class="iconfont icon-security"></label>
+                            <input type="text" class="text" value="" placeholder="图片验证码" name="verify_code" id="verify_code" autocomplete="off">
+                        </div>
+                        <div class="verify-code-img">
+                            <img src="{:url('index/index/getVerify')}" id="verify_code_img" onclick="NZE.getVerify('#verify_code_img')"/>
+                        </div>
+
+                        {if condition="$shop_config.basic_invite eq 1"}
+                            <div class="item">
+                                <label class="iconfont icon-user-o"></label>
+                                <input type="text" class="text" placeholder="推荐人电话或邮箱地址（选填）" name="invite" id="invite_name" autocomplete="off">
+                            </div>
+                        {/if}
+                        <div class="clearfix"></div>
+                        <div class="item-text">
+                            <div class="term-condition">
+                                <label>
+                                    <input type="checkbox" name="term_condition" value="1" checked><span class="term-text">我已阅读并同意<a href="{:url('blog/article/post', ['article_id' => 20])}" target="_blank">服务条款</a>和<a href="{:url('blog/activity/post',['artcile_id'=>21])}" target="_blank">隐私条款</a> </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="login_bnt">
+                            <a href="javascript:void(0);" onclick="checkSubmit();" class="register-submit">立即注册</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{/block}
+{block name="footer_js"}
+<script type="text/javascript" src="__STATIC__/js/layer/layer.js"></script>
+<script type="text/javascript">
+
+    function checkSubmit()
+    {
+        var user_name = $.trim($('input[name="user_name"]').val());
+        var user_password = $.trim($('input[name="user_password"]').val());
+        var confirm_password = $.trim($('input[name="confirm_password"]').val());
+        if(user_name == ''){
+            layer.msg('用户名不能为空!',{icon:2});
+            return false;
+        }
+        if(user_password == ''){
+            layer.msg('请输入密码!',{icon:2});
+            return false;
+        }
+        if(confirm_password == ''){
+            layer.msg('请再次确认密码!',{icon:2});
+            return false;
+        }
+
+        var verify_code = $('#verify_code').val();
+        if(verify_code == ''){
+            layer.alert('请输入图像验证码', {icon: 2});
+            return;
+        }
+
+        {if condition="$regist_smtp_enable eq 1 || $regist_sms_enable eq 1"}
+            {if condition="$Request.param.type eq ''"}
+                var email = $('#user_email').val();
+                var email_code = $('#email_code').val();
+                if(!checkEmail(email)){
+                    layer.alert('请输入正确的邮箱', {icon: 2});
+                    return;
+                }
+                if(email_code == ''){
+                    layer.alert('请输入邮箱验证码', {icon: 2});
+                    return;
+                }
+            {/if}
+            {if condition="$Request.param.type eq 'mobile'"}
+                var mobile = $('#user_mobile').val();
+                var mobile_code = $('#mobile_code').val();
+                if(!checkMobile(mobile)){
+                    layer.alert('请输入正确的手机号码', {icon: 2});
+                    return;
+                }
+                if(mobile_code == ''){
+                    layer.alert('请输入手机验证码', {icon: 2});
+                    return;
+                }
+            {/if}
+        {/if}
+
+        var ll = layer.msg('正在处理数据，请稍后...',{time:600000});
+
+        //showErrorMsg('网络失败，请刷新页面后重试');
+        $.ajax({
+            type : 'post',
+            url : NZE.U('user/login/register'),
+            data : $('#registform').serialize(),
+            dataType : 'json',
+            success : function(res){
+                console.log(res);
+                if(res.status == 1){
+                    layer.msg(res.msg, {icon: 1},function(){
+                        window.location.href = "{:url('user/dashboard/index')}";
+                    });
+                }else{
+                    layer.alert(res.msg, {icon: 2},function(index){
+                        NZE.getVerify('#verify_code_img');
+                        layer.close(index);
+                    });
+                }
+                layer.close(ll);
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                layer.msg('网络失败，请刷新页面后重试', {icon: 5});
+                layer.close(ll);
+                NZE.getVerify('#verify_code_img');
+            }
+        });
+    }
+
+</script>
+{/block}

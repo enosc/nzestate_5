@@ -1,0 +1,141 @@
+{extend name="default/base/base_user" /}
+
+{block name="user_main"}
+<div class="send-message">
+    <div class="send-message-form">
+        <div class="user-form">
+            <form method="post" id="send_form" action="">
+                <dl>
+                    <dt><i class="required">*</i>{$Think.lang.home_message_reveiver}{$Think.lang.colon}</dt>
+                    <dd>
+                        <input type="text" class="text w500" name="to_user_name" value="{present name='user_name'}{$user_name}{/present}" {notempty name="user_name"}readonly{/notempty}/>
+                        <p class="hint">{$Think.lang.home_message_separate}</p>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>消息类型：</dt>
+                    <dd><span class="mr10">
+	  <input type="radio" class="radio vm" value="2" name="msg_type" checked="checked" />
+						{$Think.lang.home_message_open}</span><span>
+	  <input type="radio" class="radio vm" name="msg_type" value="0" />
+						{$Think.lang.home_message_close}</span></dd>
+                </dl>
+                <dl>
+                    <dt><i class="required">*</i>{$Think.lang.home_message_content}{$Think.lang.colon}</dt>
+                    <dd>
+                        <textarea name="msg_content" rows="3" class="textarea w500 h100"></textarea>
+                        <p class ="error"></p>
+                    </dd>
+                </dl>
+                <div class="bottom">
+                    <label class="submit-item">
+                        <!--<input type="submit" class="submit" value="{$Think.lang.home_message_ensure_send}" />-->
+                        <a href="javascript:void(0);" onclick="check_send_state()" class="submit">{$Think.lang.home_message_ensure_send}</a>
+                    </label>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="send-message-friend">
+        <h3>{$Think.lang.home_message_friend}</h3>
+        {notempty name="friend_list"}
+            <ul>
+                {foreach name="friend_list" item="val"}
+                <li><a href="javascript:void(0);" id="{$val.to_user_name}" nz_type="to_user_name">
+                    <div class="avatar"><img src="{:get_user_avatar($val.to_user_avatar)}"></div>
+                    <p>{$val.to_user_name}</p>
+                </a></li>
+                {/foreach}
+            </ul>
+        {else /}
+                <div class="nomessage"><p>{$Think.lang.home_message_no_friends}</p>
+                    <a href="{:url('userfriend/index')}" class="user-btn-mini" target="_blank">添加好友</a>
+                </div>
+        {/notempty}
+    </div>
+</div>
+
+
+{/block}
+
+{block name="footer_js"}
+<script type="text/javascript">
+
+    /*检查是否能发站内信*/
+    function check_send_state(){
+        // var params = NZE.getParams('.ipt');
+        var ll = layer.msg('正在处理数据，请稍后...',{time:600000});
+        $.post(NZE.U('home/usermessage/checkstate'),{is_ajax: 1},function(data){
+            if(data.code=='1'){
+                save_info('home/usermessage/savemsg');
+            }else{
+                layer.close(ll);
+                layer.msg(data.msg, {icon: 5});
+            }
+
+        });
+        return true;
+    }
+
+    $(function(){
+        $('a[nz_type="to_user_name"]').click(function (){
+            var str = $('input[name="to_user_name"]').val();
+            var id = $(this).attr('id');
+            if(str.indexOf(id+',') < 0){
+                doFriend(id+',', 'add');
+            }else{
+                doFriend(id, 'delete');
+            }
+        });
+    });
+    $(function(){
+        $('#send_form').validate({
+            errorPlacement: function(error, element){
+                $(element).next('p').html(error);
+            },
+            submitHandler:function(form){
+                ajaxpost('send_form', '', '', 'onerror')
+            },
+            rules : {
+                to_user_name : {
+                    required   : true
+                },
+                msg_content : {
+                    required   : false
+                }
+            },
+            messages : {
+                to_user_name : {
+                    required : '{$Think.lang.home_message_receiver_null}.'
+                },
+                msg_content : {
+                    required   : '{$Think.lang.home_message_content_null}.'
+                }
+            }
+        });
+    });
+    function doFriend(user_name, action){
+        var input_name = $("input[name='to_user_name']").val();
+        var key, i = 0;
+        var exist = false;
+        var arrOld = new Array();
+        var arrNew = new Array();
+        input_name = input_name.replace(/\uff0c/g,',');
+        arrOld     = input_name.split(',');
+        for(key in arrOld){
+            arrOld[key] = $.trim(arrOld[key]);
+            if(arrOld[key].length > 0){
+                arrOld[key] == user_name &&  action == 'delete' ? null : arrNew[i++] = arrOld[key]; //剔除好友
+                arrOld[key] == user_name ? exist = true : null; //判断好友是否已选
+            }
+        }
+        if(action == 'delete' && arrNew !=''){
+            arrNew = arrNew+',';
+        }
+        if(!exist && action == 'add'){
+            arrNew[i] = user_name;
+        }
+        $("input[name='to_user_name']").val(arrNew);
+    }
+</script>
+{/block}

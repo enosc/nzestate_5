@@ -1,0 +1,100 @@
+<div class="header w1200">
+    <div class="header-middle clearfix">
+        <a class="site-logo" href="{:url('index/index/index')}">
+            <img src="{$shop_config.shop_info_store_logo|default='/static/images/logo/pc_home_logo_default.png'}" width="160">
+        </a>
+        <div class="search-box">
+            <form id="searchForm" name="" method="get" action="{:url('shop/goods/search')}" class="search-box-form">
+                <input autocomplete="off" name="keyword" id="keyword" type="text" value="{$Request.param.keyword}" class="search-box-input" placeholder="请输入搜索关键字">
+                <button type="submit" class="search-box-button">搜索</button>
+                <div class="suggestion p">
+                    <ul id="suggestion_list"></ul>
+                </div>
+            </form>
+            <div class="keyword clearfix">
+                {foreach name="shop_config.hot_keywords" item="wd" key="k"}
+                    <a class="key-item" href="{:url('shop/goods/search',array('keyword'=>$wd))}" target="_blank">{$wd}</a>
+                {/foreach}
+            </div>
+        </div>
+        <div class="mini-cart fr" id="my-mini-cart">
+            <a href="{:url('shop/cart/index')}">
+                <div class="cart-title fl">
+                    <i class="iconfont icon-cart"></i>
+                    <span>我的购物车</span>
+                    <em class="cart-goods-num" id="cart_quantity"></em>
+                </div>
+            </a>
+            <div class="cart-content" id="show_mini_cart">
+                <div class="mini-cart-content" id="mini_cart">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="nav clearfix">
+        <div class="categorys index-category">
+            <div class="dt">
+                <a href="" target="_blank"><i class="iconfont icon-list"></i>全部商品分类</a>
+            </div>
+            <!--全部商品分类-s-->
+            <div class="dd">
+                <div class="cat-nav" id="cat-nav">
+                    {foreach $goods_category_tree as $v}
+                        <div class="item">
+                            {if condition="$v.cat_level eq 1"}
+                                <div class="item-left">
+                                    <h3 class="cat-nav-name">
+                                        <div class="cat-nav-wrap">
+                                            <i class="{$v.cat_icon}"></i>
+                                            <a href="{:url('shop/goods/category',array('id'=>$v.cat_id))}" title="{$v.cat_name}">{$v.mobile_cat_name}</a>
+                                        </div>
+                                    </h3>
+                                </div>
+                            {/if}
+                            <div class="cat-nav-right">
+                                <div class="cat-hot">
+                                    <!-- 如果没有热门分类就隐藏 -->
+                                    {if condition="count($v.hot_cate) gt 0"}
+                                        <div class="cat-hot-title">
+                                            {foreach name="v.hot_cate" item="hc"}
+                                                <a class="cat-hot-item" href="{:url('Home/Goods/goodsList',['id'=>$hc.cat_id])}">
+                                                    {$hc.cat_name}<i class="iconfont icon-arrow-right"></i>
+                                                </a>
+                                            {/foreach}
+                                        </div>
+                                    {/if}
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="child-cat">
+                                    {foreach name="v['tmenu']" key="k2" item='v2'}
+                                        {if condition="$v2.parent_id eq $v.cat_id"}
+                                            <dl class="clearfix">
+                                                <dt><a href="{:url('shop/goods/goodsList',array('id'=>$v2.cat_id))}" target="_blank">{$v2.cat_name}</a></dt>
+                                                <dd class="clearfix">
+                                                    {foreach name="v2['sub_menu']" key="k3" item='v3'}
+                                                        {if condition="$v3.parent_id eq $v2.cat_id"}
+                                                            <a href="{:url('Home/Goods/goodsList',array('id'=>$v3.cat_id))}" target="_blank">{$v3.cat_name}</a>
+                                                        {/if}
+                                                    {/foreach}
+                                                </dd>
+                                            </dl>
+                                        {/if}
+                                    {/foreach}
+                                </div>
+                            </div>
+                        </div>
+                    {/foreach}
+                </div>
+            </div>
+        <!--全部商品分类-e-->
+        </div>
+        <ul class="nav-item clearfix" id="nav-item">
+            <li {if condition="request()->controller() eq 'Index' "}class="selected"{/if}><a href="{:url('Index/index')}">首页</a></li>
+            {foreach $nav_menu.nav_top as $vo}
+                <li {if condition="$_SERVER['REQUEST_URI'] eq str_replace('&amp;','&',$vo.nav_url)"}class='selected'{/if}>
+                    <a href="{$vo.nav_url}" {if condition="$vo.is_new eq 1"}target="_blank" {/if} >{$vo.nav_name}</a>
+                </li>
+            {/foreach}
+        </ul>
+    </div>
+</div>

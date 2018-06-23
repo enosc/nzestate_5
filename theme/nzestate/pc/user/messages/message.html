@@ -1,0 +1,108 @@
+{extend name="default/base/base_user" /}
+
+{block name="user_btn"}
+    {if $isallowsend}
+        <a href="javascript:void(0);" onclick="checkstate();" class="user-btn user-btn-green" title="{$Think.lang.home_message_send_message}"><i class="fa fa-envelope-o"></i>{$Think.lang.home_message_send_message}</a>
+    {/if}
+{/block}
+{block name="user_main"}
+
+<table class="user-table">
+    <thead>
+        <tr>
+            <th class="w30"></th>
+            <th class="w100 tl">
+                {if $drop_type == 'msg_seller'}
+                    {$Think.lang.home_message_storename}
+                {else /}
+                    {$Think.lang.home_message_sender}
+                {/if}
+            </th>
+            <th class="tl">{$Think.lang.home_message_content}</th>
+            <th class="w300">{$Think.lang.home_message_last_update}</th>
+            <th class="w110">{$Think.lang.home_message_command}</th>
+        </tr>
+        {notempty name="message_array"}
+        <tr>
+            <td colspan="20"><input type="checkbox" id="all" class="checkall"/>
+                <label for="all">{$Think.lang.home_message_select_all}</label>
+                {if $drop_type == 'msg_list'}
+                    <a href="javascript:void(0)" class="user-btn-mini" uri="{:url('usermessage/dropcommonmsg',['drop_type'=>$drop_type])}" name="message_id" confirm="{$Think.lang.home_message_delete_confirm}?" nz_type="batchbutton"><i class="fa fa-trash-o"></i>{$Think.lang.home_message_delete}</a>
+                {/if}
+                {if $drop_type == 'msg_system' || $drop_type == 'msg_seller'}
+                    <a href="javascript:void(0)" class="user-btn-mini" uri="{:url('usermessage/dropbatchmsg',['drop_type'=>$drop_type])}" name="message_id" confirm="{$Think.lang.home_message_delete_confirm}?" nz_type="batchbutton">{$Think.lang.home_message_delete}</a>
+                {/if}
+            </td>
+        </tr>
+        {/notempty}
+    </thead>
+    <tbody>
+        {notempty name="message_array"}
+            {foreach name="message_array" item="v"}
+                <tr class="bd-line">
+                    <td class="tc"><input type="checkbox" class="checkitem" value="{$v.message_id}"/></td>
+                    <td class="tl">{$v.from_user_name}</td>
+                    <td class="link2 {if $v.message_open == 0}font_bold{/if} tl">{:parsesmiles($v.message_body)}</td>
+                    <td>{:date('Y-m-d H:i:s',$v.update_time)}</td>
+                    <td class="table-handle">
+                        {if $drop_type == 'msg_list'}
+                            <span>
+                                <a href="{:url('usermessage/showmsg',['type'=>$drop_type,'message_id'=>$v.message_id])}{if $v.parent_id>0}#{$v.message_id}{/if}" class="btn-blue">
+                                    <i class="fa fa-pencil-square"></i>
+                                    <p>{$Think.lang.home_message_view_detail}</p>
+                                </a>
+                            </span>
+                            <span>
+                                <a href="javascript:void(0)" onclick="drop_msg('{$v.message_id}', '{$drop_type}');" class="btn-red">
+                                    <i class="fa fa-trash-o"></i>
+                                    <p>{$Think.lang.home_message_delete}</p>
+                                </a>
+                            </span>
+                        {/if}
+                        {if $drop_type=='msg_system' || $drop_type =='msg_seller'}
+                            <span>
+                            <a href="{:url('usermessage/showmsgbatch',['type'=>$drop_type,'message_id'=>$v.message_id])}{if $v.parent_id>0}#{$v.message_id}{/if}" class="btn-acidblue">
+                                <i class="fa fa-eye"></i>
+                                <p>{$Think.lang.home_message_view_detail}</p>
+                            </a>
+                            </span>
+                            <span>
+                                <a href="javascript:void(0)" onclick="drop_msg('{$v.message_id}', '{$drop_type}');" class="btn-red">
+                                    <i class="fa fa-trash-o"></i>
+                                    <p>{$Think.lang.home_message_delete}</p>
+                                </a>
+                            </span>
+                        {/if}
+                    </td>
+                </tr>
+            {/foreach}
+        {else /}
+            <tr>
+                <td colspan="20" class="norecord"><div class="warning-option">
+                    <i>&nbsp;</i><span>{$Think.lang.no_record}</span></div>
+                </td>
+            </tr>
+        {/notempty}
+    </tbody>
+    <tfoot>
+        {notempty name="message_array"}
+            <tr>
+                <td colspan="20"><div class="pagination">{$show_page}</div></td>
+            </tr>
+        {/notempty}
+    </tfoot>
+</table>
+
+{/block}
+
+{block name="footer_js"}
+<script type="text/javascript">
+    function drop_msg(id, type){
+
+        var url = NZE.U('home/usermessage/drop', 'drop_type='+ type);
+        var msg = "{$Think.lang.home_message_delete_confirm}?";
+
+        drop_info(url, id, msg);
+    }
+</script>
+{/block}

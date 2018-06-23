@@ -1,0 +1,107 @@
+{extend name="default/base/base_user" /}
+{block name="css"}<link rel="stylesheet" href="{$Think.PLUGINS_SITE_ROOT}/jquery-ui/jquery-ui.min.css">{/block}
+{block name="user_main"}
+<div class="alert">
+    {$Think.lang.home_user_tag_list}
+</div>
+<div class="user-form">
+    <form method="post" id="profile_more" action="">
+        <input type="hidden" name="old_user_avatar" class="ipt" value="{$user_info.user_avatar}" />
+        <div nz_type="list" class="user-tag-optional">
+            {if $user_tag_list}
+                {foreach name="user_tag_list" item="utag"}
+                    <span nz_type="able" data-param='{"id":"{$utag.tag_id}"}'>{$utag.tag_name}</span>
+                {/foreach}
+            {/if}
+        </div>
+        <h4 class="w90 mt20 mb10 tip" title="{$Think.lang.home_user_more_my_tag_title}">{$Think.lang.home_user_more_my_tag}</h4>
+        <div nz_type="choose" class="user-tag-selected">
+            {if $utu_list}
+            {foreach name="utu_list" item="utu"}
+            <span nz_type="able" data-param='{"id":"{$utu.tag_id}"}'>{$utu.tag_name}
+				<a href="javascript:void(0)" nz_type="delTag"><input type="hidden" name="mid[]" class="ipt" value="{$utu.tag_id}" /></a>
+			</span>
+            {/foreach}
+            {/if}
+            <span nz_type="ep" class="ep">&nbsp;</span> </div>
+        <div class="bottom">
+            <label class="submit-border">
+                <input type="hidden" class="ipt" value="1" name="is_ajax" id="is_ajax" />
+                <a href="javascript:save_info('home/userinfo/user_tag')" class="submit">{$Think.lang.home_user_save_modify}</a>
+            </label>
+        </div>
+    </form>
+</div>
+
+{/block}
+
+{block name="footer_js"}
+<script src="{$Think.PLUGINS_SITE_ROOT}/poshytip/jquery.poshytip.min.js"></script>
+<script>
+    jQuery.browser={};(function(){jQuery.browser.msie=false; jQuery.browser.version=0;if(navigator.userAgent.match(/MSIE ([0-9]+)./)){ jQuery.browser.msie=true;jQuery.browser.version=RegExp.$1;}})();
+</script>
+<script type="text/javascript">
+
+    $(function(){
+        var $list = $('div[nz_type="list"]');
+        var $choose = $('div[nz_type="choose"]');
+        var $ep = $('span[nz_type="ep"]');
+        $('span[nz_type="able"]', $list).draggable({
+            cancel: "a.ui-icon",
+            revert: "invalid",
+            containment: "document",
+            helper: "clone",
+            cursor: "move"
+        });
+        $('span[nz_type="able"]', $choose).draggable({
+            cancel: "a.ui-icon",
+            revert: "invalid",
+            containment: "document",
+            helper: "clone",
+            cursor: "move"
+        });
+        $choose.droppable({
+            accept: 'div[nz_type="list"] span',
+            activeClass: "ui-state-highlight",
+            drop: function( event, ui ) {
+                chooseTeg(ui.draggable);
+            }
+        });
+        $list.droppable({
+            accept: 'div[nz_type="choose"] span',
+            activeClass: "custom-state-active",
+            drop: function( event, ui ) {
+                recycleIeg(ui.draggable);
+            }
+        });
+
+        function chooseTeg($item){
+            $item.fadeOut('fast',function(){
+                eval("data_param = "+($item.attr('data-param')));
+                $item.append('<a href="javascript:void(0)" nz_type="delTag"><input type="hidden" name="mid[]" class="ipt" value="'+data_param.id+'" /></a>')
+                    .insertBefore($ep).fadeIn('fast').removeAttr('style');
+            });
+
+        }
+        function recycleIeg($item){
+            $item.fadeOut('fast',function(){
+                $item.find('a').remove().end().appendTo($list).fadeIn('fast').removeAttr('style');
+            });
+        }
+
+        $(document).on('click','a[nz_type="delTag"]', function(){
+            recycleIeg($(this).parent());
+        });
+
+        $('div[nz_type="list"]').on('click','span', function(){
+            chooseTeg($(this));
+        });
+
+        $('.tip').poshytip({//Ajax提示
+            className: 'tip-darkgray',
+            bgImageFrameSize: 11,
+            offsetY: -20,
+        });
+    });
+</script>
+{/block}

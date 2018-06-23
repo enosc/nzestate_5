@@ -1,0 +1,50 @@
+<div class="admin-top-nav">
+    <div class="bgSelector"></div>
+    <div id="foldSidebar"><i class="iconfont icon-outdent " title="展开/收起侧边导航"></i></div>
+    <div class="admin-logo" onclick="openItem('welcome|Index');">
+        <img  style="width: 148px;height: 28px" src="{$shop_config.shop_info_admin_home_logo|default='/static/images/logo/admin-logo.png'}" alt="">
+    </div>
+    <div class="nc-module-menu">
+        <ul class="nc-row">
+            <li data-param="system"><a href="javascript:void(0);">系统</a></li>
+            <li data-param="shop"><a href="javascript:void(0);">商城</a></li>
+            <!--      <li data-param="mobile"><a href="javascript:void(0);">模板</a></li>-->
+            <li data-param="resource"><a href="javascript:void(0);">插件</a></li>
+        </ul>
+    </div>
+    <div class="admin-top-nav-r">
+        <div class="manager">
+            <dl>
+                <dt class="name">{$admin_info.admin_name}</dt>
+                <dd class="group">管理员</dd>
+            </dl>
+            <span class="avatar">
+                <!-- 屏蔽管理员头像上传 -->
+                <!-- input name="_pic" type="file" class="admin-avatar-file" id="_pic" title="设置管理员头像"/ -->
+                <img alt="" tptype="admin_avatar" src="__STATIC__/admin/images/admint.png">
+            </span>
+            <i class="arrow" id="admin-manager-btn" title="显示快捷管理菜单"></i>
+            <div class="manager-menu">
+                <div class="title">
+                    <h4>最后登录</h4>
+                    <a href="javascript:void(0);" onclick="CUR_DIALOG = ajax_form('modifypw', '修改密码', '{:url('Admin/modify_pwd',array('admin_id'=>$admin_info['admin_id']))}');" class="edit-password">修改密码</a> </div>
+                <div class="login-date"> {:date('Y-m-d H:i:s',$admin_info.last_login)} <span>(IP: {$admin_info.last_ip} )</span> </div>
+                <div class="title">
+                    <h4>常用操作</h4>
+                    <a href="javascript:void(0)" class="add-menu">添加菜单</a> </div>
+                <ul class="nc-row" tptype="quick_link">
+                    <li><a href="javascript:void(0);" onClick="openItem('index|System')">站点设置</a></li>
+                </ul>
+            </div>
+        </div>
+        <ul class="operate nc-row">
+            <li style="display: none !important;" tptype="pending_matters"><a class="toast show-option" href="javascript:void(0);" onClick="$.cookie('commonPendingMatters', 0, {expires : -1});ajax_form('pending_matters', '待处理事项', 'http://www.tpshop.cn/admin/index.php?act=common&op=pending_matters', '480');" title="查看待处理事项"><i class="iconfont icon-bell"></i><em>0</em></a></li>
+            <!-- li><a class="sitemap show-option" tptype="map_on" href="javascript:void(0);" title="查看全部管理菜单">&nbsp;</a></li -->
+            <!-- li><a class="style-color show-option" id="trace_show" href="javascript:void(0);" title="给管理中心换个颜色">&nbsp;</a></li -->
+            <li><a class="sitemap show-option" id="trace_show" href="{:url('System/cleanCache',array('quick'=>1))}" target="workspace" title="更新缓存"><i class="iconfont icon-cache"></i></a></li>
+            <li><a class="homepage show-option" target="_blank" href="/" title="新窗口打开商城首页"><i class="iconfont icon-store"></i></a></li>
+            <li><a class="login-out show-option" href="{:url('Admin/logout')}" title="安全退出管理中心"><i class="iconfont icon-power-off"></i></a></li>
+        </ul>
+    </div>
+    <div class="clear"></div>
+</div>

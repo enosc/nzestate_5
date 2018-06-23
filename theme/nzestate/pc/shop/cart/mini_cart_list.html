@@ -1,0 +1,41 @@
+{empty name="cartList"}
+    <div class="empty-cart">
+        <span><i class="iconfont icon-cart"></i>亲，购物车中没有商品哟~</span>
+    </div>
+{else /}
+    <div class="mini-cart-content">
+        <div class="mini-cart-content">
+            {foreach $cartList as $cart}
+                <div class="goods-list">
+                    <div class="goods-list-title">{$cart.add_time|date="Y-m-d H:i:s",###}</div>
+                    <div class="promotion" style="display:none">  <!-- 临时屏蔽 -->
+                        <span class="i">[满减]</span>满299元减50元
+                    </div>
+                    <div class="list-item clearfix">
+                        <a href="javascript:void(0);" class="del js_delete"
+                           onclick="mini_cart_del('{$cart.cart_id}'),ajax_cart_list();">×</a>
+                        <a href="{:url('Home/Goods/goodsInfo',array('id'=>$cart[goods_id]))}" class="goods-pic fl">
+                            <img src="{$cart.goods_id|goods_thumb_images=50,50}" title="{$cart.goods_name}">
+                        </a>
+                        <div class="goods-cont fl">
+                            <a href="{:url('Home/Goods/goodsInfo',array('id'=>$cart.goods_id))}" class="goods-name">{$cart.goods_name}</a>
+                            <p class="num fl"> * {$cart.goods_num}件</p>
+                            <p class="red fr">${$cart.user_goods_price}</p>
+                        </div>
+                    </div>
+                </div>
+            {/foreach}
+            <div class="mini-cart-total">
+                <div class="total-text">
+                    <p class="t-n fl"><span class="red" id="total_qty">{$cartPriceInfo.goods_num}</span>件</p>
+                    <p class="t-p red fr"><em>$</em><span id="total_pay">{$cartPriceInfo.total_fee}</span></p>
+                </div>
+                <a href="{:url('Home/Cart/index')}" class="cart-btn">去购物车结算</a>
+            </div>
+        </div>
+    </div>
+{/empty}
+
+<script type="text/javascript">
+    $(".cart_quantity").text('{$cartPriceInfo.goods_num}');
+</script>

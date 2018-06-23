@@ -1,0 +1,102 @@
+{include file="public/header" /}
+
+<div class="login-layout">
+    <form class="login-form" id="login_form">
+        <div class="logo">
+            <img src='__STATIC__/admin/images/backlogo.png' height='45'/>
+        </div>
+        <div class="formContent">
+            <div class="form-info">
+                <div class="form-text">
+                    <i class="iconfont icon-user"></i>
+                    <input type='text' id='user_name' name="user_name" class='text' value='' placeholder="用户名">
+                </div>
+                <div class="form-text">
+                    <i class="iconfont icon-password"></i>
+                    <input type='password' id='user_password' name="user_password" class='text' value='' placeholder="用户密码">
+                </div>
+                <div class="form-text">
+                    <i class="iconfont icon-security"></i>
+                    <input type='text' id='verify_code' name="verify_code" class='text' placeholder="验证码">
+                    <img id='verifyImg' src="{:url('index/index/getVerify')}" onclick='NZE.getVerify(this)'>
+                </div>
+                <div class="submit-btn">
+                    <input type='button' class="submit" value='登录' onclick='login()'>
+                    <input type='reset' class="reset" value='重置'>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="bannerBox">
+    <ul id="slideBanner" class="slideBanner">
+        {notempty name="login_banner"}
+            {foreach $login_banner as $vo}
+                <li><img src="{$vo.ad_image}"></li>
+            {/foreach}
+        {else /}
+            {for start="1" end="6"}
+                <li><img src="__STATIC__/admin/images/wallpage/banner_{$i}.jpg"></li>
+            {/for}
+        {/notempty}
+    </ul>
+</div>
+
+<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/login.css">
+<script type="text/javascript">
+    function login(){
+        var username=true;
+        var password=true;
+        var vertify=true;
+
+        if($('#user_name').val() == ''){
+            layer.msg('请输入用户名',{icon:2});
+            return false;
+        }
+
+        if($('#user_password').val() == ''){
+            layer.msg('密码不能为空',{icon:2});
+            return false;
+        }
+
+        if($('#verify_code').val() == ''){
+            layer.msg('验证码不能为空',{icon:2});
+            return false;
+        }
+
+        var ll = layer.msg('正在处理数据，请稍后...',{time:600000});
+
+        //showErrorMsg('网络失败，请刷新页面后重试');
+        $.ajax({
+            type : 'post',
+            url : NZE.U('admin/admin/login', 't='+Math.random()),
+            data : $('#login_form').serialize(),
+            dataType : 'json',
+            success : function(res){
+                if(res.status == 1){
+                    //window.location.href = res.url;
+                    top.location.href = res.url;
+                }else{
+                    //showErrorMsg(res.msg);
+                    layer.msg(res.msg, {icon: 5});
+                    NZE.getVerify('#verifyImg');
+                }
+                layer.close(ll);
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                layer.msg('网络失败，请刷新页面后重试', {icon: 5});
+                NZE.getVerify('#verifyImg');
+                layer.close(ll);
+            }
+        });
+
+    }
+    $("#bannerBox").slide({mainCell:".slideBanner",effect:"fold",interTime:3500,delayTime:500,autoPlay:true,autoPage:true,endFun:function(i,c,s){
+        $(window).resize(function(){
+            var width = $(window).width();
+            var height = $(window).height();
+            s.find(".slideBanner,.slideBanner li").css({"width":width,"height":height});
+        });
+    }});
+</script>
+{include file="public/footer" /}

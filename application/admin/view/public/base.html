@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>后台管理 {block name="title"}{$shop_config.shop_info_store_title|default='诺庄NZestate'}{/block}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="keywords" content="{$shop_config['shop_info_store_keyword']|default=''}" />
+    <meta name="description" content="{$shop_config['shop_info_store_desc']|default=''}" />
+    <meta name="auther" content="诺庄NZestate,www.nzestate.com" />
+    <meta name="copyright" content="Copyright©2017-2022 Powered By NZestate" />
+    {block name="meta"}{/block}
+    <link rel="stylesheet" type="text/css" href="__STATIC__/css/style.css">
+    <link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css">
+    {block name="css"}{/block}
+    <script type="text/javascript">
+        window.conf = {
+            "ROOT"      : "__ROOT__",
+            "STATIC"    : "__STATIC__",
+            "SITE_URL"    : "{$Think.SITE_URL}",
+        }
+    </script>
+    <!--[if lte IE 8]>
+    <script type="Text/Javascript" language="JavaScript">
+        function detectBrowser()
+        {
+            var browser = navigator.appName
+            if(navigator.userAgent.indexOf("MSIE")>0){
+                var b_version = navigator.appVersion
+                var version = b_version.split(";");
+                var trim_Version = version[1].replace(/[ ]/g,"");
+                if ((browser=="Netscape"||browser=="Microsoft Internet Explorer"))
+                {
+                    if(trim_Version == 'MSIE8.0' || trim_Version == 'MSIE7.0' || trim_Version == 'MSIE6.0'){
+                        alert('请使用IE9.0版本以上进行访问');
+                        return false;
+                    }
+                }
+            }
+        }
+        detectBrowser();
+    </script>
+    <![endif]-->
+    <script type="text/javascript" src="__STATIC__/js/jquery.min.js"></script>
+    <script type="text/javascript" src="__STATIC__/js/common.js"></script>
+    <script type="text/javascript" src="__STATIC__/js/jquery.SuperSlide.js"></script>
+    <script type="text/javascript" src="__STATIC__/js/layer/layer.js"></script>
+    <script type="text/javascript" src="__STATIC__/admin/js/admin.js"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="{$shop_config.shop_info_store_ico|default='/static/images/logo/storeico_default.png'}" media="screen"/>
+    {block name="header_js"}{/block}
+
+</head>
+<body>
+
+{block name="header"}
+    {include file="public/header" /}
+{/block}
+{block name="main"}{/block}
+
+{block name="footer_js"}{/block}
+
+</body>
+</html>

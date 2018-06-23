@@ -1,0 +1,173 @@
+{extend name="public/base" /}
+
+{block name="title"}登录-{$shop_config.shop_info_store_title|default='诺庄NZestate'}{/block}
+
+{block name="css"}
+    <link rel="stylesheet" type="text/css" href="__THEME__/css/login.css">
+{/block}
+{block name="header"}{/block}
+{block name="main"}
+<div class="login-wrap">
+    <div class="w1200">
+        <div class="login-form">
+            <div class="form-content">
+                <div class="form-title">
+                    <span>账户登录</span>
+                </div>
+                <form id="loginform" method="post">
+                    <div class="content-item">
+                        <div class="item">
+                            <label class="iconfont icon-user"></label>
+                            <input type="text" autofocus="autofocus" class="text" value="" placeholder="手机号/邮箱" name="user_name" id="user_name" autocomplete="off">
+                        </div>
+                        <div class="item">
+                            <label class="iconfont icon-password"></label>
+                            <input type="password" class="text" value="" placeholder="密码" name="user_password" id="user_password" autocomplete="off">
+                        </div>
+                        <div class="item verify-code">
+                            <label class="iconfont icon-security"></label>
+                            <input type="text" class="text" value="" placeholder="验证码" name="verify_code" id="verify_code" autocomplete="off">
+                        </div>
+                        <div class="verify-code-img">
+                            <img src="{:url('index/index/getVerify')}" id="verify_code_img" onclick="NZE.getVerify('#verify_code_img')"/>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="item-text">
+                            <div class="auto-login">
+                                <label>
+                                    <input type="hidden" name="referurl" id="referurl" value="{$referurl}">
+                                    <input type="checkbox" name="auto_login" value="1">自动登录
+                                </label>
+                            </div>
+                            <div class="foget_pwt">
+                                <a href="{:url('Home/User/forget_pwd')}">忘记密码？</a>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="login_bnt">
+                            <a href="javascript:void(0);" onClick="checkSubmit();" class="J-login-submit" name="sbtbutton">登&nbsp;&nbsp;&nbsp;&nbsp;录</a>
+                        </div>
+                    </div>
+                </form>
+                <div class="partner-login">
+                    <div class="login-type">
+                        <div class="partner-login-list">
+                            <ul>
+                                {notempty name="partner_login.weixin"}
+                                    <li>
+                                        <a href="{:url('LoginApi/login',array('oauth'=>'weixin'))}" title="weixin">
+                                            <i class="iconfont icon-weixin-color"></i>
+                                            <span>微信</span>
+                                        </a>
+                                    </li>
+                                {/notempty}
+                                {notempty name="partner_login.qq"}
+                                    <li>
+                                        <a href="{:url('LoginApi/login',array('oauth'=>'qq'))}" title="QQ">
+                                            <i class="iconfont icon-qq-color"></i>
+                                            <span>QQ</span>
+                                        </a>
+                                    </li>
+                                {/notempty}
+                                {notempty name="partner_login.alipay"}
+                                    <li>
+                                        <a href="{:url('LoginApi/login',array('oauth'=>'alipay'))}" title="支付宝">
+                                            <i class="iconfont icon-alipay-color"></i>
+                                            <span>支付宝</span>
+                                        </a>
+                                    </li>
+                                {/notempty}
+                            </ul>
+                        </div>
+                        <div class="register">
+                            <a href="{:url('user/login/register')}">
+                                <span>立即注册</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="footer_js"}
+<script type="text/javascript" src="__STATIC__/js/layer/layer.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $('.text').focus(function(){
+            //焦点获取
+            $(this).parents('.item').addClass('text-focus');
+        })
+        $('.text').blur(function(){
+            //失去焦点
+            $(this).parents('.item').removeClass('text-focus');
+        })
+    });
+
+    function checkSubmit()
+    {
+        var user_name = $.trim($('#user_name').val());
+        var user_password = $.trim($('#user_password').val());
+        var referurl = $('#referurl').val();
+        var verify_code = $.trim($('#verify_code').val());
+        if(user_name == ''){
+            //showErrorMsg('用户名不能为空!');
+            layer.msg('用户名不能为空!',{icon:2});
+            return false;
+        }
+        if(!checkMobile(user_name) && !checkEmail(user_name)){
+            //showErrorMsg('账号格式不匹配,请输入正确邮箱地址。');
+            layer.msg('账号格式不匹配,请输入正确邮箱地址。',{icon:2});
+            return false;
+        }
+        if(user_password == ''){
+            //showErrorMsg('密码不能为空!');
+            layer.msg('密码不能为空!',{icon:2});
+            return false;
+        }
+        if(verify_code == ''){
+            layer.msg('验证码不能为空!',{icon:2});
+            return false;
+        }
+
+        var ll = layer.msg('正在处理数据，请稍后...',{time:600000});
+
+        //showErrorMsg('网络失败，请刷新页面后重试');
+        $.ajax({
+            type : 'post',
+            url : NZE.U('user/login/do_login','t='+Math.random()),
+            data : $('#loginform').serialize(),
+            dataType : 'json',
+            success : function(res){
+                console.log(res);
+                if(res.status == 1){
+                    window.location.href = res.url;
+                }else{
+                    //showErrorMsg(res.msg);
+                    layer.msg(res.msg, {icon: 5});
+                    NZE.getVerify('#verify_code_img');
+                }
+                layer.close(ll);
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                layer.msg('网络失败，请刷新页面后重试', {icon: 5});
+                NZE.getVerify('#verify_code_img');
+                layer.close(ll);
+            }
+        });
+
+
+    }
+
+    //回车提交
+    $(document).keyup(function(event){
+        if(event.keyCode ==13){
+            var isFocus=$("#verify_code").is(":focus");
+            if(true==isFocus){
+                checkSubmit();
+            }
+        }
+    });
+</script>
+{/block}
